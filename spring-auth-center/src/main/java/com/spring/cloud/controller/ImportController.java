@@ -15,10 +15,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public abstract class ImportController extends BaseController {
     @Autowired
     private ImportRecordService importRecordService;
+
+   protected ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @RequestMapping("/loadImport")
     Map<String, Object> loadImport(ImportType type, Integer page, Integer pageSize) {

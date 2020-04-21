@@ -2,13 +2,13 @@ package com.spring.cloud.controller;
 
 import com.spring.cloud.controller.command.CarCommand;
 import com.spring.cloud.controller.command.CarExportCommand;
-import com.spring.cloud.entity.Car;
-import com.spring.cloud.entity.Status;
-import com.spring.cloud.entity.User;
+import com.spring.cloud.entity.*;
+import com.spring.cloud.repository.ImportRecordRepository;
 import com.spring.cloud.service.CarService;
 import com.spring.cloud.utils.CommandUtils;
 import com.spring.cloud.utils.POIUtils;
 import com.spring.cloud.utils.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,9 +26,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/car")
+@Slf4j
 public class CarController extends ImportController {
     @Autowired
     private CarService carService;
+    @Autowired
+    private ImportRecordRepository importRecordRepository;
 
     @RequestMapping("/loadCars")
     public Map<String, Object> loadDrivers(String cardNumber, Status status,int importId, Integer page, Integer pageSize) {
@@ -42,16 +45,26 @@ public class CarController extends ImportController {
 
     @RequestMapping("/import")
     public Map<String, Object> loadDrivers(MultipartFile file) throws IOException {
-        List<String[]> excelData = POIUtils.readExcel(file);
-        List<Car> cars = new ArrayList<>();
-        excelData.forEach(item -> {
-            Car car = new Car();
-            car.setStatus(Status.WARITIN);
-            car.setCarNumber(item[0]);
-            car.setUser(SecurityUtils.currentUser());
-            cars.add(car);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ImportRecord importRecord = new ImportRecord();
+                importRecord.setType(ImportType.CAR);
+                importRecord.setUser(SecurityUtils.currentUser());
+                try {
+                    List<String[]> excelData = POIUtils.readExcel(file);
+                    carService.importDriver(excelData,importRecord);
+                } catch (Exception ex) {
+                    importRecord.setImportStatus(false);
+                    importRecord.setReason("导入错误，请检查数据");
+                    log.error("导入错误",ex);
+                }finally {
+                    if (importRecord.getId() <= 0) {
+                        importRecordRepository.save(importRecord);
+                    }
+                }
+            }
         });
-        carService.importDriver(cars);
         return this.resultMap(true);
     }
 

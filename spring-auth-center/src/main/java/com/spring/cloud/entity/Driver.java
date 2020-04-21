@@ -16,6 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class Driver extends IntIdBaseEntity {
+    boolean valid = true;
     private String cardNumber;
     private Date firstDate;
     private Date beginDate;

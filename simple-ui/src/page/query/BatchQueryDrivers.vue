@@ -70,7 +70,7 @@
           </el-table-column>
           <el-table-column sortable
                            prop="company"
-                           label="">
+                           label="企业">
           </el-table-column>
           <el-table-column sortable
                            prop="status" :formatter="statusFormatter"

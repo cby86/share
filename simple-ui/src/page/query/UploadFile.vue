@@ -48,6 +48,7 @@
     methods: {
       handleSuccess() {
         this.$message.success("导入成功")
+        this.$emit("close")
       },
       closeD(){
         this.$emit("close")

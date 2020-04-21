@@ -2,13 +2,13 @@ package com.spring.cloud.controller;
 
 import com.spring.cloud.controller.command.DriverCommand;
 import com.spring.cloud.controller.command.DriverExportCommand;
-import com.spring.cloud.entity.Driver;
-import com.spring.cloud.entity.Status;
-import com.spring.cloud.entity.User;
+import com.spring.cloud.entity.*;
+import com.spring.cloud.repository.ImportRecordRepository;
 import com.spring.cloud.service.DriverService;
 import com.spring.cloud.utils.CommandUtils;
 import com.spring.cloud.utils.POIUtils;
 import com.spring.cloud.utils.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,11 +26,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/driver")
+@Slf4j
 public class DriverController extends ImportController {
     @Autowired
     private DriverService driverService;
 
-
+    @Autowired
+    private ImportRecordRepository importRecordRepository;
     @RequestMapping("/loadDrivers")
     public Map<String, Object> loadDrivers(String cardNumber, Status status,int importId, Integer page, Integer pageSize) {
         Sort sort = new Sort(Sort.Direction.DESC, "createDate");
@@ -43,16 +45,26 @@ public class DriverController extends ImportController {
 
     @RequestMapping("/import")
     public Map<String, Object> loadDrivers(MultipartFile file) throws IOException {
-        List<String[]> excelData = POIUtils.readExcel(file);
-        List<Driver> drivers = new ArrayList<>();
-        excelData.forEach(item -> {
-            Driver driver = new Driver();
-            driver.setStatus(Status.WARITIN);
-            driver.setCardNumber(item[0]);
-            driver.setUser(SecurityUtils.currentUser());
-            drivers.add(driver);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ImportRecord importRecord = new ImportRecord();
+                importRecord.setType(ImportType.DRIVER);
+                importRecord.setUser(SecurityUtils.currentUser());
+                try {
+                    List<String[]> excelData = POIUtils.readExcel(file);
+                    driverService.importDriver(excelData,importRecord);
+                } catch (Exception ex) {
+                    importRecord.setImportStatus(false);
+                    importRecord.setReason("导入错误，请检查数据");
+                    log.error("导入错误",ex);
+                }finally {
+                    if (importRecord.getId() <= 0) {
+                        importRecordRepository.save(importRecord);
+                    }
+                }
+            }
         });
-        driverService.importDriver(drivers);
         return this.resultMap(true);
     }
 

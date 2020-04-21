@@ -33,35 +33,38 @@ public class DriverServiceImpl implements DriverService {
     private UserRepository userRepository;
     @Autowired
     private ImportRecordRepository importRecordRepository;
+
     @Override
-    public Page<Driver> loadDriversByPage(String cardNumber, Status status,int userId,int importId, Pageable pageable) {
+    public Page<Driver> loadDriversByPage(String cardNumber, Status status, int userId, int importId, Pageable pageable) {
         pageable.getSort().and(Sort.by(Sort.Order.desc("createDate")));
         return driverRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            return getPredicate(cardNumber, status, userId, root, criteriaBuilder,importId);
+            return getPredicate(cardNumber, status, userId, root, criteriaBuilder, importId);
         }, pageable);
     }
 
     @Override
-    public void importDriver(List<Driver> drivers) {
-        ImportRecord importRecord = new ImportRecord();
-        importRecord.setImportCount(drivers.size());
-        importRecord.setType(ImportType.DRIVER);
-        importRecord.setUser(SecurityUtils.currentUser());
-        importRecordRepository.save(importRecord);
-        drivers.forEach(item->{
-            item.setImportRecord(importRecord);
+    public void importDriver(List<String[]> excelData, ImportRecord importRecord) {
+        List<Driver> drivers = new ArrayList<>();
+        excelData.forEach(item -> {
+            Driver driver = new Driver();
+            driver.setStatus(Status.WARITIN);
+            driver.setCardNumber(item[0]);
+            driver.setUser(SecurityUtils.currentUser());
+            drivers.add(driver);
         });
         driverRepository.saveAll(drivers);
+        importRecord.setImportCount(drivers.size());
+        importRecordRepository.save(importRecord);
     }
 
     @Override
-    public List<Driver> loadDrivers(String cardNumber, Status status,int userId,int importId) {
+    public List<Driver> loadDrivers(String cardNumber, Status status, int userId, int importId) {
         return driverRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            return getPredicate(cardNumber, status, userId, root, criteriaBuilder,importId);
+            return getPredicate(cardNumber, status, userId, root, criteriaBuilder, importId);
         });
     }
 
-    private Predicate getPredicate(String cardNumber, Status status, int userId, Root<Driver> root, CriteriaBuilder criteriaBuilder,int importId) {
+    private Predicate getPredicate(String cardNumber, Status status, int userId, Root<Driver> root, CriteriaBuilder criteriaBuilder, int importId) {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
         Join<Object, Object> user = root.join("user", JoinType.LEFT);
@@ -84,25 +87,25 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public  int batchQuery(int importId) {
+    public int batchQuery(int importId) {
         User user = SecurityUtils.currentUser();
         User userInDb = userRepository.getOne(user.getId());
         if (userInDb.getTimes() <= 0) {
             throw new UnsupportedOperationException("次数不够，请联系管理员");
         }
-        List<Driver> drivers = this.loadDrivers(null, Status.WARITIN, user.getId(),importId);
+        List<Driver> drivers = this.loadDrivers(null, Status.WARITIN, user.getId(), importId);
         if (drivers.isEmpty()) {
             throw new UnsupportedOperationException("没有待查询的记录");
         }
         int size = drivers.size();
         if (size > user.getTotalCount()) {
-            throw new UnsupportedOperationException("您当前最多能批量处理"+user.getTotalCount()+"条数据,当前待处理"+size+"条,如需更多请联系管理员");
+            throw new UnsupportedOperationException("您当前最多能批量处理" + user.getTotalCount() + "条数据,当前待处理" + size + "条,如需更多请联系管理员");
         }
         Driver driver = drivers.get(0);
         ImportRecord importRecord = driver.getImportRecord();
-        drivers.forEach(item->{
+        drivers.forEach(item -> {
             try {
-                String resuslt = HttpClientUtil.queryDriver(item.getCardNumber(),userInDb.getReferUrl());
+                String resuslt = HttpClientUtil.queryDriver(item.getCardNumber(), userInDb.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
                 JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
                 if (jsonArray.size() > 0) {
@@ -111,11 +114,11 @@ public class DriverServiceImpl implements DriverService {
                 }
                 Thread.currentThread().sleep(300);
             } catch (Exception ex) {
-                log.error("查询司机错误",ex);
+                log.error("查询司机错误", ex);
                 item.setStatus(Status.PROCCED);
             }
             try {
-                String resuslt = HttpClientUtil.queryDriverDetails(item.getCardNumber(),userInDb.getReferUrl());
+                String resuslt = HttpClientUtil.queryDriverDetails(item.getCardNumber(), userInDb.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
                 JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
                 if (jsonArray.size() > 0) {
@@ -124,19 +127,19 @@ public class DriverServiceImpl implements DriverService {
                 }
                 Thread.currentThread().sleep(300);
             } catch (Exception ex) {
-                log.error("查询司机详细错误",ex);
+                log.error("查询司机详细错误", ex);
                 item.setStatus(Status.PROCCED);
             }
             importRecord.addQueryCount();
         });
         int usedTimes;
-        if (size % User.countPerTimes==0) {
-            usedTimes = size /  User.countPerTimes;
-        }else {
-            usedTimes = size /  User.countPerTimes + 1;
+        if (size % User.countPerTimes == 0) {
+            usedTimes = size / User.countPerTimes;
+        } else {
+            usedTimes = size / User.countPerTimes + 1;
         }
         importRecord.setUsedTimes(usedTimes);
-        userRepository.updateTimes(usedTimes,user.getId());
+        userRepository.updateTimes(usedTimes, user.getId());
         return size;
     }
 }

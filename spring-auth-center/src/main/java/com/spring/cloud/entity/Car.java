@@ -86,6 +86,7 @@ import javax.persistence.Entity;
 @Getter
 @Setter
 public class Car extends IntIdBaseEntity{
+    boolean valid = true;
     String carNumber;
     @Enumerated(value = EnumType.STRING)
     private Status status;

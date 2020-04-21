@@ -19,12 +19,17 @@ public class ImportRecord  extends IntIdBaseEntity{
     private int importCount;
     private int usedTimes;
     private int queryCount;
+    private int invalidCount;
     @Enumerated(value = EnumType.STRING)
     ImportType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    private boolean importStatus=true;
+
+    private String reason;
 
 
     public void addQueryCount() {
