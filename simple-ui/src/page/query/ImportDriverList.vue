@@ -31,6 +31,14 @@
                            prop="queryCount"
                            label="查询条数">
           </el-table-column>
+          <el-table-column
+            prop="invalidCount"
+            label="不合规条数">
+          </el-table-column>
+          <el-table-column
+            prop="queryStatus" :formatter="statusFormatter"
+            label="状态">
+          </el-table-column>
           <el-table-column width="300px"
             fixed="right"
             label="操作">
@@ -76,6 +84,21 @@
       this.loadImport(1, this.pageSize)
     },
     methods: {
+      statusFormatter(row, column) {
+        let status = row.queryStatus;
+        if (status === 'IMPORT') {
+          return '导入数据处理中'
+        }
+        if (status === 'READY') {
+          return '导入完成'
+        }
+        if (status === 'QUERYING') {
+          return '执行查询中'
+        }
+        if (status === 'QUERYED') {
+          return '查询完成'
+        }
+      },
       refresh() {
         this.loadImport(1, this.pageSize)
       },

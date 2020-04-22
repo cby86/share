@@ -12,6 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class CarCommand implements Command<Car> {
+    boolean valid = true;
     String carNumber;
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     Date createDate;
@@ -109,6 +110,7 @@ public class CarCommand implements Command<Car> {
         this.ck = domain.getCk();
         this.cg = domain.getCg();
         this.lxdh = domain.getLxdh();
+        this.valid = domain.isValid();
         return this;
     }
 }

@@ -10,7 +10,6 @@ import com.spring.cloud.service.CarService;
 import com.spring.cloud.utils.HttpClientUtil;
 import com.spring.cloud.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +21,8 @@ import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -33,16 +34,18 @@ public class CarServiceImpl implements CarService {
     private UserRepository userRepository;
     @Autowired
     private ImportRecordRepository importRecordRepository;
+
     @Override
-    public Page<Car> loadCarsByPage(String cardNumber, Status status,int userId, int importId,Pageable pageable) {
+    public Page<Car> loadCarsByPage(String cardNumber, Status status, int userId, int importId, Pageable pageable) {
         pageable.getSort().and(Sort.by(Sort.Order.desc("createDate")));
         return carRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            return getPredicate(cardNumber, status, userId, root, criteriaBuilder,importId);
+            return getPredicate(cardNumber, status, userId, root, criteriaBuilder, importId);
         }, pageable);
     }
 
     @Override
-    public void importDriver( List<String[]> excelData, ImportRecord importRecord) {
+    public void importDriver(List<String[]> excelData, ImportRecord importRecord, int userId) {
+        User user = userRepository.getOne(userId);
         List<Car> cars = new ArrayList<>();
         excelData.forEach(item -> {
             Car car = new Car();
@@ -50,36 +53,36 @@ public class CarServiceImpl implements CarService {
             car.setCarNumber(item[0]);
             if (!this.isCarnumberNO(car.getCarNumber())) {
                 car.setValid(false);
+                importRecord.addInvalidCount();
             }
-            car.setUser(SecurityUtils.currentUser());
+            car.setUser(user);
+            car.setImportRecord(importRecord);
             cars.add(car);
         });
         carRepository.saveAll(cars);
         importRecord.setImportCount(cars.size());
+        importRecord.setQueryStatus(QueryStatus.READY);
         importRecordRepository.save(importRecord);
     }
 
 
-    public  boolean isCarnumberNO(String carnumber) {
-   /*
-   1.常规车牌号：仅允许以汉字开头，后面可录入六个字符，由大写英文字母和阿拉伯数字组成。如：粤B12345；
-   2.武警车牌：允许前两位为大写英文字母，后面可录入五个或六个字符，由大写英文字母和阿拉伯数字组成，其中第三位可录汉字也可录大写英文字母及阿拉伯数字，第三位也可空，如：WJ警00081、WJ京1234J、WJ1234X。
-   3.最后一个为汉字的车牌：允许以汉字开头，后面可录入六个字符，前五位字符，由大写英文字母和阿拉伯数字组成，而最后一个字符为汉字，汉字包括“挂”、“学”、“警”、“军”、“港”、“澳”。如：粤Z1234港。
-   4.新军车牌：以两位为大写英文字母开头，后面以5位阿拉伯数字组成。如：BA12345。
-       */
-        String carnumRegex = "^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[警京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼]{0,1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$";
-        if (StringUtils.isEmpty(carnumber)) return false;
-        else return carnumber.matches(carnumRegex);
+    public boolean isCarnumberNO(String carnumber) {
+        Pattern p = Pattern.compile("^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(?:(?![A-Z]{4})[A-Z0-9]){4,6}[A-Z0-9挂学警港澳]{1}$");
+        Matcher m = p.matcher(carnumber);
+        if (!m.matches()) {
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public List<Car> loadCars(String cardNumber, Status status,int userId,int importId) {
+    public List<Car> loadCars(String cardNumber, Status status, int userId, int importId) {
         return carRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
-            return getPredicate(cardNumber, status, userId, root, criteriaBuilder,importId);
+            return getPredicate(cardNumber, status, userId, root, criteriaBuilder, importId);
         });
     }
 
-    private Predicate getPredicate(String cardNumber, Status status, int userId, Root<Car> root, CriteriaBuilder criteriaBuilder,int importId) {
+    private Predicate getPredicate(String cardNumber, Status status, int userId, Root<Car> root, CriteriaBuilder criteriaBuilder, int importId) {
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
         Join<Object, Object> user = root.join("user", JoinType.LEFT);
@@ -101,51 +104,56 @@ public class CarServiceImpl implements CarService {
         carRepository.updateCar(user.getId());
     }
 
+
     @Override
-    public  int batchQuery(int importId) {
-        User user = SecurityUtils.currentUser();
-        User userInDb = userRepository.getOne(user.getId());
-        if (userInDb.getTimes() <= 0) {
+    public int batchQuery(int importId, int userId) {
+        User user = userRepository.getOne(userId);
+        if (user.getTimes() <= 0) {
             throw new UnsupportedOperationException("次数不够，请联系管理员");
         }
-        List<Car> cars = this.loadCars(null, Status.WARITIN, user.getId(),importId);
+        List<Car> cars = this.loadCars(null, Status.WARITIN, user.getId(), importId);
         if (cars.isEmpty()) {
             throw new UnsupportedOperationException("没有待查询的记录");
         }
         int size = cars.size();
         if (size > user.getTotalCount()) {
-            throw new UnsupportedOperationException("您当前最多能批量处理"+user.getTotalCount()+"条数据,当前待处理"+size+"条,如需更多请联系管理员");
+            throw new UnsupportedOperationException("您当前最多能批量处理" + user.getTotalCount() + "条数据,当前待处理" + size + "条,如需更多请联系管理员");
         }
         Car car = cars.get(0);
         ImportRecord importRecord = car.getImportRecord();
-        cars.forEach(item->{
+        updateStatus(importRecord);
+        cars.forEach(item -> {
             try {
-                String resuslt = HttpClientUtil.queryCar(item.getCarNumber(),userInDb.getReferUrl());
+                String resuslt = HttpClientUtil.queryCar(item.getCarNumber(), user.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
                 JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
                 if (jsonArray.size() > 0) {
                     JSONObject data = jsonArray.getJSONObject(0);
                     item.syncData(data);
+                } else {
+                    item.setStatus(Status.PROCCED);
                 }
                 Thread.currentThread().sleep(300);
             } catch (Exception ex) {
-                log.error("查询司机错误",ex);
+                log.error("查询司机错误", ex);
                 item.setStatus(Status.PROCCED);
             }
             importRecord.addQueryCount();
         });
         int usedTimes;
-        if (size % User.countPerTimes==0) {
-            usedTimes = size /  User.countPerTimes;
-        }else {
-            usedTimes = size /  User.countPerTimes + 1;
+        if (size % User.countPerTimes == 0) {
+            usedTimes = size / User.countPerTimes;
+        } else {
+            usedTimes = size / User.countPerTimes + 1;
         }
         importRecord.setUsedTimes(usedTimes);
-        userRepository.updateTimes(usedTimes,user.getId());
+        importRecord.setQueryStatus(QueryStatus.QUERYED);
+        userRepository.updateTimes(usedTimes, user.getId());
         return cars.size();
     }
 
-    public static void main(String[] args) {
-        System.out.println(100 /10);
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    protected void updateStatus(ImportRecord importRecord) {
+        importRecord.setQueryStatus(QueryStatus.QUERYING);
     }
 }

@@ -11,11 +11,12 @@ import java.util.List;
 public interface DriverService {
     Page<Driver> loadDriversByPage(String cardNumber, Status status,int userId,int importId, Pageable pageable);
 
-    void importDriver( List<String[]> excelData , ImportRecord importRecord);
+    public void importDriver(List<String[]> excelData, ImportRecord importRecord, int userId);
 
     List<Driver> loadDrivers(String cardNumber, Status status,int userId,int importId);
 
     void clear();
 
-    int batchQuery(int importId);
+    int batchQuery(int importId, int userId);
+
 }

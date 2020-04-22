@@ -8,6 +8,7 @@ import com.spring.cloud.repository.ImportRecordRepository;
 import com.spring.cloud.repository.UserRepository;
 import com.spring.cloud.service.DriverService;
 import com.spring.cloud.utils.HttpClientUtil;
+import com.spring.cloud.utils.IdCardUtil;
 import com.spring.cloud.utils.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +44,25 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public void importDriver(List<String[]> excelData, ImportRecord importRecord) {
+    public void importDriver(List<String[]> excelData, ImportRecord importRecord,int userId) {
+        User user = userRepository.getOne(userId);
         List<Driver> drivers = new ArrayList<>();
         excelData.forEach(item -> {
             Driver driver = new Driver();
             driver.setStatus(Status.WARITIN);
+
             driver.setCardNumber(item[0]);
-            driver.setUser(SecurityUtils.currentUser());
+            if (!IdCardUtil.isValidatedAllIdcard(driver.getCardNumber())) {
+                driver.setValid(false);
+                importRecord.addInvalidCount();
+            }
+            driver.setUser(user);
+            driver.setImportRecord(importRecord);
             drivers.add(driver);
         });
         driverRepository.saveAll(drivers);
         importRecord.setImportCount(drivers.size());
+        importRecord.setQueryStatus(QueryStatus.READY);
         importRecordRepository.save(importRecord);
     }
 
@@ -87,10 +96,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public int batchQuery(int importId) {
-        User user = SecurityUtils.currentUser();
-        User userInDb = userRepository.getOne(user.getId());
-        if (userInDb.getTimes() <= 0) {
+    public int batchQuery(int importId, int userId) {
+        User user = userRepository.getOne(userId);
+        if (user.getTimes() <= 0) {
             throw new UnsupportedOperationException("次数不够，请联系管理员");
         }
         List<Driver> drivers = this.loadDrivers(null, Status.WARITIN, user.getId(), importId);
@@ -103,14 +111,18 @@ public class DriverServiceImpl implements DriverService {
         }
         Driver driver = drivers.get(0);
         ImportRecord importRecord = driver.getImportRecord();
+        updateStatus(importRecord);
         drivers.forEach(item -> {
             try {
-                String resuslt = HttpClientUtil.queryDriver(item.getCardNumber(), userInDb.getReferUrl());
+                String resuslt = HttpClientUtil.queryDriver(item.getCardNumber(), user.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
                 JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
                 if (jsonArray.size() > 0) {
                     JSONObject data = jsonArray.getJSONObject(0);
                     item.syncData(data);
+                }
+                else {
+                    item.setStatus(Status.PROCCED);
                 }
                 Thread.currentThread().sleep(300);
             } catch (Exception ex) {
@@ -118,7 +130,7 @@ public class DriverServiceImpl implements DriverService {
                 item.setStatus(Status.PROCCED);
             }
             try {
-                String resuslt = HttpClientUtil.queryDriverDetails(item.getCardNumber(), userInDb.getReferUrl());
+                String resuslt = HttpClientUtil.queryDriverDetails(item.getCardNumber(), user.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
                 JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
                 if (jsonArray.size() > 0) {
@@ -139,7 +151,13 @@ public class DriverServiceImpl implements DriverService {
             usedTimes = size / User.countPerTimes + 1;
         }
         importRecord.setUsedTimes(usedTimes);
+        importRecord.setQueryStatus(QueryStatus.QUERYED);
         userRepository.updateTimes(usedTimes, user.getId());
         return size;
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    protected void updateStatus(ImportRecord importRecord) {
+        importRecord.setQueryStatus(QueryStatus.QUERYING);
     }
 }

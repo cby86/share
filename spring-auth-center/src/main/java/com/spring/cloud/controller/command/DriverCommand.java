@@ -13,6 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class DriverCommand implements Command<Driver> {
+    boolean valid = true;
     private String cardNumber;
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     private Date createDate;
@@ -66,6 +67,7 @@ public class DriverCommand implements Command<Driver> {
         this.company = domain.getCompany();
         this.driverCardFirstDate = domain.getDriverCardFirstDate();
         this.driverCarType = domain.getDriverCarType();
+        this.valid = domain.isValid();
         return this;
     }
 }

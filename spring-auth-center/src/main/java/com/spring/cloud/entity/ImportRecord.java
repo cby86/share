@@ -14,8 +14,9 @@ import java.util.Date;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
-public class ImportRecord  extends IntIdBaseEntity{
-
+public class ImportRecord extends IntIdBaseEntity {
+    @Enumerated(value = EnumType.STRING)
+    private QueryStatus queryStatus;
     private int importCount;
     private int usedTimes;
     private int queryCount;
@@ -27,12 +28,16 @@ public class ImportRecord  extends IntIdBaseEntity{
     @JoinColumn(name = "user_id")
     private User user;
 
-    private boolean importStatus=true;
+    private boolean importStatus = true;
 
     private String reason;
 
 
     public void addQueryCount() {
         this.queryCount++;
+    }
+
+    public void addInvalidCount() {
+        this.invalidCount++;
     }
 }

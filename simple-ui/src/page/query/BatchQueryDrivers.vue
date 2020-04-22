@@ -73,6 +73,10 @@
                            label="企业">
           </el-table-column>
           <el-table-column sortable
+            prop="valid" :formatter="validFormatter"
+            label="导入合规性">
+          </el-table-column>
+          <el-table-column sortable
                            prop="status" :formatter="statusFormatter"
                            label="状态">
           </el-table-column>
@@ -135,6 +139,9 @@
         } else {
           return '已查询'
         }
+      },
+      validFormatter(row, column) {
+        return row.valid ?"合规":"不合规"
       },
       closeFile() {
         this.loadDrivers(1, this.pageSize)
