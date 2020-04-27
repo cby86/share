@@ -25,16 +25,16 @@
     </el-row>
     <el-row>
       <el-col>
-        <el-table size="small"
+        <el-table size="small" :row-class-name="tableRowClassName"
                   :data="tableData"
                   style="width: 100%">
           <el-table-column sortable
-                           prop="cardNumber"
+                           prop="cardNumber" width="150"
                            label="身份证号码">
           </el-table-column>
           <el-table-column sortable
                            prop="createDate"
-                           label="创建日期">
+                           label="创建日期" width="150">
           </el-table-column>
           <!--<el-table-column sortable-->
                            <!--prop="driverName"-->
@@ -54,7 +54,7 @@
           </el-table-column>
           <el-table-column sortable
                            prop="fullName"
-                           label="从业类别全称">
+                           label="从业类别全称" width="120">
           </el-table-column>
           <el-table-column sortable
                            prop="firstDate"
@@ -132,6 +132,11 @@
       this.loadDrivers(1, this.pageSize)
     },
     methods: {
+      tableRowClassName({row}) {
+        if(!row.valid){
+          return 'warning-row';
+        }
+      },
       statusFormatter(row, column) {
         let status = row.status;
         if (status === 'WARITIN') {
@@ -220,3 +225,8 @@
     }
   };
 </script>
+<style>
+  .warning-row{
+    background: rgba(250, 12, 111, 0.22) !important;
+  }
+</style>

@@ -136,6 +136,7 @@ public class CarServiceImpl implements CarService {
                     JSONObject data = jsonArray.getJSONObject(0);
                     item.syncData(data);
                 } else {
+                    item.setValid(false);
                     importRecord.addInvalidCount();
                     item.setStatus(Status.PROCCED);
                 }

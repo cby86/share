@@ -3,7 +3,17 @@
     <el-row>
       <el-col>
         <el-form :inline="true" :model="queryForm" ref="queryForm" class="demo-form-inline">
+          <el-form-item label="状态" prop="type">
+            <el-select size="small" v-model="queryForm.queryStatus" placeholder="请选择" @change="obtainValue">
+              <el-option label="全部" value="all"></el-option>
+              <el-option label="导入数据处理中" value="IMPORT"></el-option>
+              <el-option label="导入完成" value="READY"></el-option>
+              <el-option label="执行查询中" value="QUERYING"></el-option>
+              <el-option label="查询完成" value="QUERYED"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item>
+            <el-button type="primary" size="small" icon="el-icon-search" @click="onSubmit">查询</el-button>
             <el-button type="primary" size="small" icon="el-icon-upload" @click="importExcel">导入</el-button>
             <el-button type="primary" size="small"  @click="refresh">刷新</el-button>
           </el-form-item>
@@ -49,7 +59,7 @@
             <template slot-scope="scope" >
               <el-button type="primary" size="small"  @click="exportExcel(scope.row)">导出</el-button>
               <el-button type="primary" size="small"  @click="details(scope.row)">明细</el-button>
-              <el-button type="primary" size="small"  @click="batchQuery(scope.row)">执行批量查询</el-button>
+              <el-button type="primary" size="small"   @click="batchQuery(scope.row)">执行批量查询</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -74,7 +84,7 @@
       return {
         uploadDialog: false,
         queryForm: {
-          cardNumber: null,
+          queryStatus: "all",
           type: "all"
         },
         tableData: [],
@@ -88,6 +98,12 @@
       this.loadImport(1, this.pageSize)
     },
     methods: {
+      obtainValue(v) {
+        this.queryForm.queryStatus = v;
+      },
+      onSubmit() {
+        this.loadImport(1, this.pageSize)
+      },
       statusFormatter(row, column) {
         let status = row.queryStatus;
         if (status === 'IMPORT') {
@@ -103,6 +119,9 @@
         if (status === 'QUERYED') {
           return '查询完成'
         }
+      },
+      reset() {
+        this.$refs["queryForm"].resetFields();
       },
       refresh() {
         this.loadImport(1, this.pageSize)
@@ -159,6 +178,7 @@
         this.$request.post({
           url: '/'+this.type+'/loadImport',
           data: {
+            queryStatus:this.queryForm.queryStatus!="all"?this.queryForm.queryStatus:null,
             type: this.type.toUpperCase(),
             page: page - 1,
             pageSize: pageSize

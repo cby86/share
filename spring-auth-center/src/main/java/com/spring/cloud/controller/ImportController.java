@@ -25,12 +25,12 @@ public abstract class ImportController extends BaseController {
    protected ExecutorService executor = Executors.newFixedThreadPool(2);
 
     @RequestMapping("/loadImport")
-    Map<String, Object> loadImport(ImportType type, Integer page, Integer pageSize) {
+    Map<String, Object> loadImport(ImportType type,QueryStatus queryStatus, Integer page, Integer pageSize) {
         Sort sort = new Sort(Sort.Direction.DESC, "createDate");
 
         Pageable pageable = PageRequest.of(page, pageSize,sort);
         User user = SecurityUtils.currentUser();
-        Page<ImportRecord> importByPage = importRecordService.loadImportByPage(type,user.getId(),pageable);
+        Page<ImportRecord> importByPage = importRecordService.loadImportByPage(type,user.getId(),queryStatus,pageable);
         return this.resultMap(CommandUtils.responsePage(importByPage.getTotalElements(), importByPage.getTotalPages(),
                 CommandUtils.toCommands(importByPage.getContent(), ImportCommand.class)));
     }

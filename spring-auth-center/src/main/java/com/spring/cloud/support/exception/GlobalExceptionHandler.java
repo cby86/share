@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.security.sasl.AuthenticationException;
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public Map defaultErrorHandler(HttpServletRequest request,HttpServletResponse response, Exception ex) throws Exception {
-        if (isAjax(request)) {
+        if (isAjax(request) || request instanceof MultipartHttpServletRequest) {
             //如果是ajax请求，设置状态码，让ajax执行错误处理流程
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

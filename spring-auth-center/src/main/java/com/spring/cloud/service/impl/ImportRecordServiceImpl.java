@@ -2,14 +2,13 @@ package com.spring.cloud.service.impl;
 
 import com.spring.cloud.entity.ImportRecord;
 import com.spring.cloud.entity.ImportType;
+import com.spring.cloud.entity.QueryStatus;
 import com.spring.cloud.repository.ImportRecordRepository;
 import com.spring.cloud.service.ImportRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -24,13 +23,16 @@ public class ImportRecordServiceImpl implements ImportRecordService {
     @Autowired
     private ImportRecordRepository importRecordRepository;
     @Override
-    public Page<ImportRecord> loadImportByPage(ImportType type, int userId, Pageable pageable) {
+    public Page<ImportRecord> loadImportByPage(ImportType type, int userId, QueryStatus queryStatus, Pageable pageable) {
         return importRecordRepository.findAll((root, criteriaQuery, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
             Join<Object, Object> user = root.join("user", JoinType.LEFT);
             if (type != null) {
                 predicates.add(criteriaBuilder.equal(root.get("type"), type));
+            }
+            if (queryStatus != null) {
+                predicates.add(criteriaBuilder.equal(root.get("queryStatus"), queryStatus));
             }
             predicates.add(criteriaBuilder.equal(user.get("id"), userId));
             return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));

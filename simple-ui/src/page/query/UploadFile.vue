@@ -11,16 +11,17 @@
       :on-preview="handlePreview"
       :on-remove="handleRemove"
       :on-success="handleSuccess"
+      :on-error="handleError"
       :limit="1"
       accept=".xls,.xlsx"
       :auto-upload="false">
-      <div slot="tip" class="el-upload__tip">只能上传excel文件，且不超过500kb</div>
+      <div slot="tip" class="el-upload__tip" style="color: red">只能上传excel文件，且不超过500kb,单次导入不能超过10000行数据</div>
       <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
       <el-button type="primary" size="small" @click="download">下载模板</el-button>
     </el-upload>
     <div slot="footer" class="dialog-footer">
       <el-button size="small"  @click="closeD">关闭</el-button>
-      <el-button type="primary" @click="submitUpload">确 定</el-button>
+      <el-button size="small" type="primary" @click="submitUpload">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -46,6 +47,9 @@
     }
     ,
     methods: {
+      handleError(err,file,fileList) {
+        this.$message.error(JSON.parse(err.message).message)
+      },
       handleSuccess() {
         this.$message.success("导入成功")
         this.$emit("close")

@@ -127,6 +127,7 @@ public class DriverServiceImpl implements DriverService {
                     item.syncData(data);
                 }
                 else {
+                    item.setValid(false);
                     importRecord.addInvalidCount();
                     item.setStatus(Status.PROCCED);
                 }

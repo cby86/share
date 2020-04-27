@@ -68,11 +68,6 @@ public class CarController extends ImportController {
                     importRecord.setReason("导入错误，请检查数据");
                     log.error("导入错误", ex);
                     return ex;
-                } finally {
-                    if (importRecord.getId() <= 0) {
-                        importRecord.setQueryStatus(QueryStatus.READY);
-                        importRecordRepository.save(importRecord);
-                    }
                 }
             }
         });

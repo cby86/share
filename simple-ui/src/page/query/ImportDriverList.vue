@@ -3,9 +3,19 @@
     <el-row>
       <el-col>
         <el-form :inline="true" :model="queryForm" ref="queryForm" class="demo-form-inline">
+          <el-form-item label="状态" prop="type">
+            <el-select size="small" v-model="queryForm.queryStatus" placeholder="请选择" @change="obtainValue">
+              <el-option label="全部" value="all"></el-option>
+              <el-option label="导入数据处理中" value="IMPORT"></el-option>
+              <el-option label="导入完成" value="READY"></el-option>
+              <el-option label="执行查询中" value="QUERYING"></el-option>
+              <el-option label="查询完成" value="QUERYED"></el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item>
-            <el-button type="primary" size="small"  @click="importExcel">导入</el-button>
-            <el-button type="primary" size="small"  @click="refresh">刷新</el-button>
+            <el-button type="primary" size="small" icon="el-icon-search" @click="onSubmit">查询</el-button>
+            <el-button type="primary" size="small" @click="importExcel">导入</el-button>
+            <el-button type="primary" size="small" @click="refresh">刷新</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -16,20 +26,20 @@
                   :data="tableData"
                   style="width: 100%">
           <el-table-column
-                           prop="createDate"
-                           label="创建日期">
+            prop="createDate"
+            label="创建日期">
           </el-table-column>
           <el-table-column
-                           prop="importCount"
-                           label="导入条数">
+            prop="importCount"
+            label="导入条数">
           </el-table-column>
           <el-table-column
-                           prop="usedTimes"
-                           label="使用批量执行次数">
+            prop="usedTimes"
+            label="使用批量执行次数">
           </el-table-column>
           <el-table-column
-                           prop="queryCount"
-                           label="查询条数">
+            prop="queryCount"
+            label="查询条数">
           </el-table-column>
           <el-table-column
             prop="invalidCount"
@@ -40,11 +50,11 @@
             label="状态">
           </el-table-column>
           <el-table-column width="300px"
-            fixed="right"
-            label="操作">
-            <template slot-scope="scope" >
-              <el-button type="primary" size="small"  @click="exportExcel(scope.row)">导出</el-button>
-              <el-button type="primary" size="small"  @click="details(scope.row)">明细</el-button>
+                           fixed="right"
+                           label="操作">
+            <template slot-scope="scope">
+              <el-button type="primary" size="small" @click="exportExcel(scope.row)">导出</el-button>
+              <el-button type="primary" size="small" @click="details(scope.row)">明细</el-button>
               <el-button type="primary" size="small"  @click="batchQuery(scope.row)">执行批量查询</el-button>
             </template>
           </el-table-column>
@@ -52,7 +62,8 @@
       </el-col>
     </el-row>
     <page-nation :totalCount="totalCount" :pageCount="pageCount" v-on:pageChange="loadImport"></page-nation>
-    <upload-file :centerDialogVisible="uploadDialog" :url="'/api/'+this.type+'/import'" @close="closeFile"></upload-file>
+    <upload-file :centerDialogVisible="uploadDialog" :url="'/api/'+this.type+'/import'"
+                 @close="closeFile"></upload-file>
   </div>
 </template>
 
@@ -70,20 +81,29 @@
       return {
         uploadDialog: false,
         queryForm: {
-          cardNumber: null,
+          queryStatus: "all",
           type: "all"
         },
         tableData: [],
         totalCount: 1,
         pageCount: 0,
         pageSize: 10,
-        type:"driver"
+        type: "driver"
       };
     },
     mounted() {
       this.loadImport(1, this.pageSize)
     },
     methods: {
+      obtainValue(v) {
+        this.queryForm.queryStatus = v;
+      },
+      reset() {
+        this.$refs["queryForm"].resetFields();
+      },
+      onSubmit() {
+        this.loadImport(1, this.pageSize)
+      },
       statusFormatter(row, column) {
         let status = row.queryStatus;
         if (status === 'IMPORT') {
@@ -103,22 +123,22 @@
         this.loadImport(1, this.pageSize)
       },
       details(row) {
-        this.$router.push({path:'/batchQueryDrivers',query: {importId: row.id}})
+        this.$router.push({path: '/batchQueryDrivers', query: {importId: row.id}})
       },
       closeFile() {
         this.loadImport(1, this.pageSize)
         this.uploadDialog = false;
       },
       batchQuery(row) {
-        this.$confirm('您还有'+this.$store.getters.user.times+'批量执行次数，' +
-          '一共可以处理' +this.$store.getters.user.totalCount+'条数据，'+
+        this.$confirm('您还有' + this.$store.getters.user.times + '批量执行次数，' +
+          '一共可以处理' + this.$store.getters.user.totalCount + '条数据，' +
           '将对所有未查询的身份证进行批量查询，并且将消耗查询次数, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           this.$request.post({
-            url: '/'+this.type+'/batchQuery',
+            url: '/' + this.type + '/batchQuery',
             data: {
               importId: row.id,
             },
@@ -139,11 +159,11 @@
       },
       exportExcel(row) {
         this.$request.download({
-          url: '/'+this.type+'/export',
+          url: '/' + this.type + '/export',
           data: {
-            importId:row.id,
+            importId: row.id,
             cardNumber: this.queryForm.cardNumber,
-            status: this.queryForm.type=='all'?null:this.queryForm.type,
+            status: this.queryForm.type == 'all' ? null : this.queryForm.type,
           }
         })
       },
@@ -153,8 +173,9 @@
 
       loadImport(page, pageSize) {
         this.$request.post({
-          url: '/'+this.type+'/loadImport',
+          url: '/' + this.type + '/loadImport',
           data: {
+            queryStatus: this.queryForm.queryStatus != "all" ? this.queryForm.queryStatus : null,
             type: this.type.toUpperCase(),
             page: page - 1,
             pageSize: pageSize

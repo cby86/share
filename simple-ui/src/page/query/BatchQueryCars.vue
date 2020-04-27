@@ -25,7 +25,7 @@
     </el-row>
     <el-row>
       <el-col>
-        <el-table size="small"
+        <el-table size="small" :row-class-name="tableRowClassName"
                   :data="tableData"
                   style="width: 100%">
           <el-table-column
@@ -38,7 +38,7 @@
           </el-table-column>
           <el-table-column
             prop="company"
-            label="公司">
+            label="公司" :show-overflow-tooltip="true">
           </el-table-column>
           <!--<el-table-column-->
             <!--prop="lxdh"-->
@@ -53,11 +53,11 @@
             label="编号">
           </el-table-column>
           <el-table-column
-            prop="yy_jyfw"
+            prop="yy_jyfw"  :show-overflow-tooltip="true"
             label="从业类别全称">
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="address" :show-overflow-tooltip="true"
             label="公司地址">
           </el-table-column>
           <el-table-column
@@ -132,6 +132,11 @@
       this.loadDrivers(1, this.pageSize)
     },
     methods: {
+      tableRowClassName({row}) {
+        if(!row.valid){
+          return 'warning-row';
+        }
+      },
       statusFormatter(row, column) {
         let status = row.status;
         if(status === 'WARITIN'){
@@ -221,3 +226,9 @@
     }
   };
 </script>
+
+<style>
+  .warning-row{
+    background: rgba(250, 12, 111, 0.22) !important;
+  }
+</style>

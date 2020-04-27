@@ -14,7 +14,7 @@ import java.util.Date;
 public class CarCommand implements Command<Car> {
     boolean valid = true;
     String carNumber;
-    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm",timezone = "GMT+8")
     Date createDate;
     Status status;
     String area;
