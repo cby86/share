@@ -50,6 +50,7 @@
             let userInfo = sessionStorage.getItem('userInfo');
             let user =JSON.parse(userInfo)
             user.times = result.data.times;
+            user.totalCount = result.data.totalCount;
             this.$store.dispatch('setUserInfo',user)
           }
         })

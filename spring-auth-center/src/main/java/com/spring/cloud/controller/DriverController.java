@@ -63,21 +63,25 @@ public class DriverController extends ImportController {
                 try {
                     List<String[]> excelData = POIUtils.readExcel(file);
                     driverService.importDriver(excelData, importRecord,user.getId());
+                    return 1;
                 } catch (Exception ex) {
                     importRecord.setImportStatus(false);
                     importRecord.setReason("导入错误，请检查数据");
                     log.error("导入错误", ex);
+                    return ex;
                 } finally {
                     if (importRecord.getId() <= 0) {
                         importRecord.setQueryStatus(QueryStatus.READY);
                         importRecordRepository.save(importRecord);
                     }
                 }
-                return 1;
             }
         });
         try {
-            submit.get(2, TimeUnit.SECONDS);
+            Object o = submit.get(2, TimeUnit.SECONDS);
+            if (o instanceof UnsupportedOperationException) {
+                throw (UnsupportedOperationException) o;
+            }
         } catch (TimeoutException ex) {
             throw new UnsupportedOperationException("数据量比较大，将转为后台执行，请稍后刷新");
         }

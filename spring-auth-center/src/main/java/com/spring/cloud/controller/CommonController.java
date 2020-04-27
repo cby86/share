@@ -62,6 +62,7 @@ public class CommonController extends BaseController{
         User userInDb=userService.findUser(user.getId());
         HashMap<Object, Object> data = new HashMap<>();
         data.put("times", userInDb.getTimes());
+        data.put("totalCount", userInDb.getTotalCount());
         return this.resultMap(data);
     }
 

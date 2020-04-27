@@ -111,7 +111,7 @@
       },
       batchQuery(row) {
         this.$confirm('您还有'+this.$store.getters.user.times+'批量执行次数，' +
-          '一共可以处理' +this.$store.getters.user.times*100+'条数据，'+
+          '一共可以处理' +this.$store.getters.user.totalCount+'条数据，'+
           '将对所有未查询的身份证进行批量查询，并且将消耗查询次数, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

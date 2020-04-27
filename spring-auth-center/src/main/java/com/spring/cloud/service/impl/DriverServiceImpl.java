@@ -47,6 +47,7 @@ public class DriverServiceImpl implements DriverService {
     public void importDriver(List<String[]> excelData, ImportRecord importRecord,int userId) {
         User user = userRepository.getOne(userId);
         List<Driver> drivers = new ArrayList<>();
+        List<String> error = new ArrayList<>();
         excelData.forEach(item -> {
             Driver driver = new Driver();
             driver.setStatus(Status.WARITIN);
@@ -54,12 +55,16 @@ public class DriverServiceImpl implements DriverService {
             driver.setCardNumber(item[0]);
             if (!IdCardUtil.isValidatedAllIdcard(driver.getCardNumber())) {
                 driver.setValid(false);
-                importRecord.addInvalidCount();
+                error.add(driver.getCardNumber());
+//                importRecord.addInvalidCount();
             }
             driver.setUser(user);
             driver.setImportRecord(importRecord);
             drivers.add(driver);
         });
+        if (error.size() > 0) {
+            throw new UnsupportedOperationException("导入数据身份证验证错误,一共" + error.size() + "条");
+        }
         driverRepository.saveAll(drivers);
         importRecord.setImportCount(drivers.size());
         importRecord.setQueryStatus(QueryStatus.READY);
@@ -122,6 +127,7 @@ public class DriverServiceImpl implements DriverService {
                     item.syncData(data);
                 }
                 else {
+                    importRecord.addInvalidCount();
                     item.setStatus(Status.PROCCED);
                 }
                 Thread.currentThread().sleep(300);

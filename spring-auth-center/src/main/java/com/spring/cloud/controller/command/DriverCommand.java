@@ -15,7 +15,7 @@ import java.util.Date;
 public class DriverCommand implements Command<Driver> {
     boolean valid = true;
     private String cardNumber;
-    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm",timezone = "GMT+8")
     private Date createDate;
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     private Date firstDate;
@@ -25,11 +25,11 @@ public class DriverCommand implements Command<Driver> {
     private Date endDate;
     private String name;
     private String fullName;
-    private String driverName;
+//    private String driverName;
     private String area;
     private Status status;
 
-    private String mobile;
+//    private String mobile;
 
     private String company;
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
@@ -61,9 +61,9 @@ public class DriverCommand implements Command<Driver> {
         this.status = domain.getStatus();
         this.name = domain.getName();
         this.createDate = domain.getCreateDate();
-        this.driverName = domain.getDriverName();
+//        this.driverName = domain.getDriverName();
         this.fullName = domain.getFullName();
-        this.mobile = domain.getMobile();
+//        this.mobile = domain.getMobile();
         this.company = domain.getCompany();
         this.driverCardFirstDate = domain.getDriverCardFirstDate();
         this.driverCarType = domain.getDriverCarType();

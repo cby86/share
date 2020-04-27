@@ -63,6 +63,7 @@
                   username:result.data.username,
                   times:result.data.times,
                   realName:result.data.realName,
+                  totalCount:result.data.totalCount,
                   role:result.data.authorities && result.data.authorities.length>0 ?result.data.authorities[0].authority:null
                 };
                 sessionStorage.setItem("token", result.data.token)

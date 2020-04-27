@@ -26,7 +26,8 @@ public class CarExportCommand extends BaseExcelCommand {
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("司机数据");
         Row row = sheet.createRow(0);
-        String[] title = {"车牌号","公司", "联系电话", "发证地区","编号", "从业类别全称", "公司地址", "品牌","颜色","座位","审核状态"};
+//        String[] title = {"车牌号","公司", "联系电话", "发证地区","编号", "从业类别全称", "公司地址", "品牌","颜色","座位","审核状态"};
+        String[] title = {"车牌号","公司", "发证地区","编号", "从业类别全称", "公司地址", "品牌","颜色","座位","审核状态"};
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
@@ -49,37 +50,37 @@ public class CarExportCommand extends BaseExcelCommand {
                 cell.setCellValue(command.getCompany());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(2);
-                cell.setCellValue(command.getLxdh());
-                cell.setCellStyle(style);
+//                cell = row1.createCell(2);
+//                cell.setCellValue(command.getLxdh());
+//                cell.setCellStyle(style);
 
-                cell = row1.createCell(3);
+                cell = row1.createCell(2);
                 cell.setCellValue(command.getArea());
                 cell.setCellStyle(style);
-                cell = row1.createCell(4);
+                cell = row1.createCell(3);
                 cell.setCellValue(command.getYy_dlyszh());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(5);
+                cell = row1.createCell(4);
                 cell.setCellValue(command.getYy_jyfw());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(6);
+                cell = row1.createCell(5);
                 cell.setCellValue(command.getAddress());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(7);
+                cell = row1.createCell(6);
                 cell.setCellValue(command.getBand());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(8);
+                cell = row1.createCell(7);
                 cell.setCellValue(command.getColor());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(9);
+                cell = row1.createCell(8);
                 cell.setCellValue(command.getSeat());
                 cell.setCellStyle(style);
-                cell = row1.createCell(10);
+                cell = row1.createCell(9);
                 if (command.getAduitStatus().equals("1")) {
                     cell.setCellValue("出管所终审通过可打印道路运输证");
                 }

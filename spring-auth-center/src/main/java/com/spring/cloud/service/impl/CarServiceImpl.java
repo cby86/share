@@ -47,18 +47,23 @@ public class CarServiceImpl implements CarService {
     public void importDriver(List<String[]> excelData, ImportRecord importRecord, int userId) {
         User user = userRepository.getOne(userId);
         List<Car> cars = new ArrayList<>();
+        List<String> error = new ArrayList<>();
         excelData.forEach(item -> {
             Car car = new Car();
             car.setStatus(Status.WARITIN);
             car.setCarNumber(item[0]);
             if (!this.isCarnumberNO(car.getCarNumber())) {
                 car.setValid(false);
-                importRecord.addInvalidCount();
+//                importRecord.addInvalidCount();
+                error.add(car.getCarNumber());
             }
             car.setUser(user);
             car.setImportRecord(importRecord);
             cars.add(car);
         });
+        if (error.size() > 0) {
+            throw new UnsupportedOperationException("导入数据车牌验证错误,一共" + error.size() + "条");
+        }
         carRepository.saveAll(cars);
         importRecord.setImportCount(cars.size());
         importRecord.setQueryStatus(QueryStatus.READY);
@@ -131,6 +136,7 @@ public class CarServiceImpl implements CarService {
                     JSONObject data = jsonArray.getJSONObject(0);
                     item.syncData(data);
                 } else {
+                    importRecord.addInvalidCount();
                     item.setStatus(Status.PROCCED);
                 }
                 Thread.currentThread().sleep(300);

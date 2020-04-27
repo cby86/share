@@ -25,7 +25,8 @@ public class DriverExportCommand extends BaseExcelCommand {
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("司机数据");
         Row row = sheet.createRow(0);
-        String[] title = {"司机身份证号","司机姓名", "地区", "从业类别","从业类别全称", "初领日期", "有效期起", "截至日期","手机","公司名称","当前状态","考试状态"};
+//        String[] title = {"司机身份证号","司机姓名", "地区", "从业类别","从业类别全称", "初领日期", "有效期起", "截至日期","手机","公司名称","当前状态","考试状态"};
+        String[] title = {"司机身份证号", "地区", "从业类别","从业类别全称", "初领日期", "有效期起", "截至日期","公司名称","当前状态","考试状态"};
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(true);
         style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
@@ -44,47 +45,47 @@ public class DriverExportCommand extends BaseExcelCommand {
                 cell.setCellValue(command.getCardNumber());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(1);
-                cell.setCellValue(command.getDriverName());
-                cell.setCellStyle(style);
+//                cell = row1.createCell(1);
+//                cell.setCellValue(command.getDriverName());
+//                cell.setCellStyle(style);
 
-                cell = row1.createCell(2);
+                cell = row1.createCell(1);
                 cell.setCellValue(command.getArea());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(3);
+                cell = row1.createCell(2);
                 cell.setCellValue(command.getName());
                 cell.setCellStyle(style);
-                cell = row1.createCell(4);
+                cell = row1.createCell(3);
                 cell.setCellValue(command.getFullName());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(5);
+                cell = row1.createCell(4);
                 if (command.getFirstDate() != null) {
                     cell.setCellValue(JodaTimeUtils.convertToTime(command.getFirstDate(),"yyyy-MM-dd"));
                 }
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(6);
+                cell = row1.createCell(5);
                 if (command.getBeginDate() != null) {
                     cell.setCellValue(JodaTimeUtils.convertToTime(command.getBeginDate(),"yyyy-MM-dd"));
                 }
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(7);
+                cell = row1.createCell(6);
                 if (command.getEndDate() != null) {
                     cell.setCellValue(JodaTimeUtils.convertToTime(command.getEndDate(),"yyyy-MM-dd"));
                 }
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(8);
-                cell.setCellValue(command.getMobile());
-                cell.setCellStyle(style);
+//                cell = row1.createCell(8);
+//                cell.setCellValue(command.getMobile());
+//                cell.setCellStyle(style);
 
-                cell = row1.createCell(9);
+                cell = row1.createCell(7);
                 cell.setCellValue(command.getCompany());
                 cell.setCellStyle(style);
-                cell = row1.createCell(10);
+                cell = row1.createCell(8);
                 cell.setCellValue(command.getCurrentStatus());
                 cell.setCellStyle(style);
 

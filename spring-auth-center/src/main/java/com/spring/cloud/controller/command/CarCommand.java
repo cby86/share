@@ -75,7 +75,7 @@ public class CarCommand implements Command<Car> {
     String cc;
     String ck;
     String cg;
-    String lxdh;
+//    String lxdh;
 
     @Override
     public Car toDomain() {
@@ -109,7 +109,7 @@ public class CarCommand implements Command<Car> {
         this.cc = domain.getCc();
         this.ck = domain.getCk();
         this.cg = domain.getCg();
-        this.lxdh = domain.getLxdh();
+//        this.lxdh = domain.getLxdh();
         this.valid = domain.isValid();
         return this;
     }

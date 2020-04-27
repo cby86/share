@@ -36,14 +36,14 @@
                            prop="createDate"
                            label="创建日期">
           </el-table-column>
-          <el-table-column sortable
-                           prop="driverName"
-                           label="司机姓名">
-          </el-table-column>
-          <el-table-column sortable
-                           prop="mobile"
-                           label="联系电话">
-          </el-table-column>
+          <!--<el-table-column sortable-->
+                           <!--prop="driverName"-->
+                           <!--label="司机姓名">-->
+          <!--</el-table-column>-->
+          <!--<el-table-column sortable-->
+                           <!--prop="mobile"-->
+                           <!--label="联系电话">-->
+          <!--</el-table-column>-->
           <el-table-column sortable
                            prop="area"
                            label="发证地区">
@@ -74,7 +74,7 @@
           </el-table-column>
           <el-table-column sortable
             prop="valid" :formatter="validFormatter"
-            label="导入合规性">
+            label="合规性">
           </el-table-column>
           <el-table-column sortable
                            prop="status" :formatter="statusFormatter"
@@ -158,7 +158,7 @@
       },
       batchQuery() {
         this.$confirm('您还有' + this.$store.getters.user.times + '批量执行次数，' +
-          '一共可以处理' + this.$store.getters.user.times * 100 + '条数据，' +
+          '一共可以处理' + this.$store.getters.user.totalCount + '条数据，' +
           '将对所有未查询的身份证进行批量查询，并且将消耗查询次数, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

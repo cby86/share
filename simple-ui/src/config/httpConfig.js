@@ -5,6 +5,7 @@ const instance = axios.create({
   headers: {
     'X-Requested-With':"X-Requested-With"
   },
+  // baseURL: 'http://47.106.152.238:81/api',
   baseURL: 'api',
   timeout: 5000,
   withCredentials: true

@@ -48,6 +48,9 @@ public class POIUtils {
                 int firstRowNum = sheet.getFirstRowNum();
                 //获得当前sheet的结束行
                 int lastRowNum = sheet.getLastRowNum();
+                if (lastRowNum > 10000) {
+                    throw new UnsupportedOperationException("单次导入最大行限制：10000");
+                }
                 //循环除了第一行的所有行
                 for (int rowNum = firstRowNum+1; rowNum <= lastRowNum; rowNum++) {
                     //获得当前行
