@@ -6,7 +6,7 @@
           <el-form-item label="用户名" prop="model">
             <el-input v-model="form.username"  placeholder="用户名"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="password" v-if="form.id ==null">
+          <el-form-item label="密码" prop="password">
             <el-input v-model="form.password" type="password" placeholder=密码></el-input>
           </el-form-item>
           <el-form-item label="查询次数" prop="times">
@@ -48,10 +48,6 @@
         rules: {
           username: [
             {required: true, message: '请输入名称', trigger: 'blur'},
-            {min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur'}
-          ],
-          password: [
-            {required: true, message: '请输入描述', trigger: 'blur'},
             {min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur'}
           ]
         },

@@ -69,6 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
         http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
         http.authorizeRequests()
+                .antMatchers("/user/changePassword").hasAnyRole("ADMIN","SUPER_ADMIN")
                 .antMatchers("/user/**").hasRole("SUPER_ADMIN")
                 .antMatchers("/actuator/**").permitAll()
                 .anyRequest()

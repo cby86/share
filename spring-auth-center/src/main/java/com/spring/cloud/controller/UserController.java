@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,6 +57,19 @@ public class UserController extends BaseController {
     @RequestMapping("/save")
     public Map<String, Object> save(UserCommand userCommand) {
         User user = userCommand.toDomain();
+        userService.save(user);
+        return this.resultMap(true);
+    }
+
+    @RequestMapping("/changePassword")
+    public Map<String, Object> save(String newPassword) {
+        if (!StringUtils.hasText(newPassword)) {
+            throw new UnsupportedOperationException("密码不能为空");
+        }
+        User currentUser = SecurityUtils.currentUser();
+        User user = userService.findUser(currentUser.getId());
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(bCryptPasswordEncoder.encode(newPassword));
         userService.save(user);
         return this.resultMap(true);
     }
