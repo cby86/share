@@ -33,6 +33,9 @@ instance.interceptors.response.use(response => {
     if(error.response.status===503 || error.response.status===504) {
       return Promise.reject("网络错误")
     }
+    if(error.response.status===403) {
+      return Promise.reject("无权限访问")
+    }
     if (error.response.status === 401) {
       window.localStorage.clear();
       router.push({path: "/login"})

@@ -68,7 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/dologin").successHandler(loginSuccessHandler)
                 .permitAll();
         http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
-        http.authorizeRequests().antMatchers("/actuator/**").permitAll()
+        http.authorizeRequests()
+                .antMatchers("/user/**").hasRole("SUPER_ADMIN")
+                .antMatchers("/actuator/**").permitAll()
                 .anyRequest()
                 .authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(customerAuthenticationEntryPoint);

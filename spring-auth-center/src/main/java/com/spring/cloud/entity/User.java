@@ -38,6 +38,9 @@ public class User extends IntIdBaseEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> list = new ArrayList<>();
         list.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        if (isSystem()) {
+            list.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
+        }
         return list;
     }
 

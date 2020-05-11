@@ -45,6 +45,7 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
             data.put("authorities", user.getAuthorities());
             data.put("times", user.getTimes());
             data.put("totalCount", user.getTotalCount());
+            data.put("inner", user.isSystem());
             data.put("realName", user.getRealName());
             hashMap.put("data",data);
             response.setCharacterEncoding("UTF-8");

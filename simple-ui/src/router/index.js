@@ -6,6 +6,8 @@ import BatchQueryDrivers from '@/page/query/BatchQueryDrivers'
 import BatchQueryCars from '@/page/query/BatchQueryCars'
 import ImportCarList from '@/page/query/ImportCarList'
 import ImportDriverList from '@/page/query/ImportDriverList'
+import UserList from '@/page/user/UserList'
+import UserForm from '@/page/user/UserForm'
 
 const NotFound = () => import('@/page/404/NotFound.vue')
 
@@ -63,6 +65,23 @@ var router = new Router({
           meta: {
             primary: false,
             parent: ImportCarList.name
+          }
+        },
+        {
+          path: "/userList",
+          name: UserList.name,
+          component: UserList,
+          meta: {
+            primary: true
+          }
+        },
+        {
+          path: "/userForm",
+          name: UserForm.name,
+          component: UserForm,
+          meta: {
+            primary: false,
+            parent: UserList.name
           }
         }
       ]

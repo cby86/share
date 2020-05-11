@@ -64,6 +64,7 @@
                   times:result.data.times,
                   realName:result.data.realName,
                   totalCount:result.data.totalCount,
+                  inner:result.data.inner,
                   role:result.data.authorities && result.data.authorities.length>0 ?result.data.authorities[0].authority:null
                 };
                 sessionStorage.setItem("token", result.data.token)

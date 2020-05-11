@@ -76,6 +76,15 @@
             ]
           }
         ]
+        if(this.$store.getters.user.inner) {
+          this.menus.push({
+            name: "用户列表",
+            code: "UserList",
+            url: "UserList",
+            icon: "el-icon-news",
+            show: this.$store.getters.user.inner
+          });
+        }
         this.bus.$emit("initTab")
       }
     }
