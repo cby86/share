@@ -59,7 +59,7 @@
         },
         rules: {
           newPassword: [
-            {required: true, message: '请输入描述', trigger: 'blur'},
+            {required: true, message: '密码必填', trigger: 'blur'},
             {min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur'}
           ]
         }
@@ -103,17 +103,21 @@
         this.dialogVisible = true
       },
       doChangePassword() {
-        this.$request.post({
-          url: '/user/changePassword',
-          data: this.form,
-          success: result => {
-            this.dialogVisible = false
-          },
-          error: e => {
-            this.$message.error(e)
+        this.$refs["form"].validate((valid) => {
+          if (valid) {
+            this.$request.post({
+              url: '/user/changePassword',
+              data: this.form,
+              success: result => {
+                this.$message.success("修改密码成功");
+                this.dialogVisible = false
+              },
+              error: e => {
+                this.$message.error(e)
+              }
+            })
           }
-        })
-
+        });
       },
       logout() {
         //清除token
