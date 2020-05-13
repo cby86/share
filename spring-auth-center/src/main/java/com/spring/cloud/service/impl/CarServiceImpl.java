@@ -51,12 +51,13 @@ public class CarServiceImpl implements CarService {
         excelData.forEach(item -> {
             Car car = new Car();
             car.setStatus(Status.WARITIN);
-            car.setCarNumber(item[0]);
-//            if (StringUtils.isEmpty(car.getCarNumber()) || !this.isCarnumberNO(car.getCarNumber())) {
-//                car.setValid(false);
-////                importRecord.addInvalidCount();
-//                error.add(car.getCarNumber());
-//            }
+            if (StringUtils.isEmpty(item[0]) || StringUtils.isEmpty(item[0].trim())) {
+                car.setValid(false);
+//                importRecord.addInvalidCount();
+                error.add(item[0]);
+            }else {
+                car.setCarNumber(item[0].trim());
+            }
             car.setUser(user);
             car.setImportRecord(importRecord);
             cars.add(car);

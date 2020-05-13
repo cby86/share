@@ -51,13 +51,13 @@ public class DriverServiceImpl implements DriverService {
         excelData.forEach(item -> {
             Driver driver = new Driver();
             driver.setStatus(Status.WARITIN);
-
-            driver.setCardNumber(item[0]);
-//            if (StringUtils.isEmpty(driver.getCardNumber()) || !IdCardUtil.isValidatedAllIdcard(driver.getCardNumber())) {
-//                driver.setValid(false);
-//                error.add(driver.getCardNumber());
-////                importRecord.addInvalidCount();
-//            }
+            if (StringUtils.isEmpty(item[0]) || StringUtils.isEmpty(item[0].trim())) {
+                driver.setValid(false);
+//                importRecord.addInvalidCount();
+                error.add(item[0]);
+            }else {
+                driver.setCardNumber(item[0]);
+            }
             driver.setUser(user);
             driver.setImportRecord(importRecord);
             drivers.add(driver);
