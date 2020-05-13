@@ -148,7 +148,8 @@
             },
             success: result => {
               this.loadImport(1, this.pageSize);
-              this.bus.$emit("refreshUser")
+              this.bus.$emit("refreshUser");
+              this.$message.success("执行成功");
             },
             error: e => {
               this.$message.error(e)
@@ -187,6 +188,7 @@
             this.tableData = result.data.items;
             this.totalCount = result.data.totalCount;
             this.pageCount = result.data.totalPage;
+            this.$message.success("查询成功");
           },
           error: e => {
             this.$message.error(e)

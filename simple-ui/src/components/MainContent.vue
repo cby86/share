@@ -88,13 +88,15 @@
             this.tabs = cache.filter(item => !item.closable || this.$store.getters.hasAuth(item.cacheName[0]))
             this.tabs.forEach(item => {
               item.cacheName.forEach(cache => {
+                if(this.$route.name===cache) {
+                  this.activeTab = item.name;
+                }
                 this.cacheTag.push(cache)
               })
             })
           }
         }
         if (this.tabs.length == 0) {
-          console.log("213")
           this.tabs = [
             {
               name: "1",
