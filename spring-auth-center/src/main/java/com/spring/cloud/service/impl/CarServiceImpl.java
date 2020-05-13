@@ -52,11 +52,11 @@ public class CarServiceImpl implements CarService {
             Car car = new Car();
             car.setStatus(Status.WARITIN);
             car.setCarNumber(item[0]);
-            if (!this.isCarnumberNO(car.getCarNumber())) {
-                car.setValid(false);
-//                importRecord.addInvalidCount();
-                error.add(car.getCarNumber());
-            }
+//            if (StringUtils.isEmpty(car.getCarNumber()) || !this.isCarnumberNO(car.getCarNumber())) {
+//                car.setValid(false);
+////                importRecord.addInvalidCount();
+//                error.add(car.getCarNumber());
+//            }
             car.setUser(user);
             car.setImportRecord(importRecord);
             cars.add(car);

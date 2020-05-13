@@ -53,11 +53,11 @@ public class DriverServiceImpl implements DriverService {
             driver.setStatus(Status.WARITIN);
 
             driver.setCardNumber(item[0]);
-            if (!IdCardUtil.isValidatedAllIdcard(driver.getCardNumber())) {
-                driver.setValid(false);
-                error.add(driver.getCardNumber());
-//                importRecord.addInvalidCount();
-            }
+//            if (StringUtils.isEmpty(driver.getCardNumber()) || !IdCardUtil.isValidatedAllIdcard(driver.getCardNumber())) {
+//                driver.setValid(false);
+//                error.add(driver.getCardNumber());
+////                importRecord.addInvalidCount();
+//            }
             driver.setUser(user);
             driver.setImportRecord(importRecord);
             drivers.add(driver);
