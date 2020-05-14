@@ -24,12 +24,13 @@ public class DriverExportCommand extends BaseExcelCommand {
         this.setResponseHeader();
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("司机数据");
+        sheet.setDefaultColumnWidth(15);
         Row row = sheet.createRow(0);
+
 //        String[] title = {"司机身份证号","司机姓名", "地区", "从业类别","从业类别全称", "初领日期", "有效期起", "截至日期","手机","公司名称","当前状态","考试状态"};
         String[] title = {"司机身份证号", "地区", "从业类别","从业类别全称", "初领日期", "有效期起", "截至日期","公司名称","当前状态","考试状态"};
         CellStyle style = workbook.createCellStyle();
-        style.setWrapText(true);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式
         for (int i = 0; i < title.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(title[i]);
@@ -89,7 +90,7 @@ public class DriverExportCommand extends BaseExcelCommand {
                 cell.setCellValue(command.getCurrentStatus());
                 cell.setCellStyle(style);
 
-                cell = row1.createCell(11);
+                cell = row1.createCell(9);
                 cell.setCellValue(command.getNextStatus());
                 cell.setCellStyle(style);
             }

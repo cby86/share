@@ -24,13 +24,13 @@ public class CarExportCommand extends BaseExcelCommand {
     protected Workbook toWorkbook() {
         this.setResponseHeader();
         Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("司机数据");
+        Sheet sheet = workbook.createSheet("车辆数据");
+        sheet.setDefaultColumnWidth(15);
         Row row = sheet.createRow(0);
 //        String[] title = {"车牌号","公司", "联系电话", "发证地区","编号", "从业类别全称", "公司地址", "品牌","颜色","座位","审核状态"};
         String[] title = {"车牌号","公司", "发证地区","编号", "从业类别全称", "公司地址", "品牌","颜色","座位","审核状态"};
         CellStyle style = workbook.createCellStyle();
-        style.setWrapText(true);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER); // 创建一个居中格式
+        style.setAlignment(HSSFCellStyle.ALIGN_LEFT); // 创建一个居中格式
         for (int i = 0; i < title.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(title[i]);
@@ -90,4 +90,5 @@ public class CarExportCommand extends BaseExcelCommand {
 
         return workbook;
     }
+
 }
