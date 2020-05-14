@@ -81,7 +81,7 @@ public class CarExportCommand extends BaseExcelCommand {
                 cell.setCellValue(command.getSeat());
                 cell.setCellStyle(style);
                 cell = row1.createCell(9);
-                if (command.getAduitStatus().equals("1")) {
+                if (command.getAduitStatus()!=null && command.getAduitStatus().equals("1")) {
                     cell.setCellValue("出管所终审通过可打印道路运输证");
                 }
                 cell.setCellStyle(style);

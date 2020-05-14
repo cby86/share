@@ -191,6 +191,7 @@
         });
       },
       exportExcel() {
+        alert(this.importId)
         this.$request.download({
           url: '/car/export',
           data: {

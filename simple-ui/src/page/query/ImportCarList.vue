@@ -166,6 +166,7 @@
         this.$request.download({
           url: '/'+this.type+'/export',
           data: {
+            importId: row.id,
             cardNumber: this.queryForm.cardNumber,
             status: this.queryForm.type=='all'?null:this.queryForm.type,
           }
