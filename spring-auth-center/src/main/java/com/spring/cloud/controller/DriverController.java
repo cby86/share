@@ -118,7 +118,7 @@ public class DriverController extends ImportController {
                     throw (UnsupportedOperationException)object;
                 }
             } catch (TimeoutException e) {
-                throw new UnsupportedOperationException("数据量比较大，将转为后台执行，请稍后查看");
+                throw new UnsupportedOperationException("数据量比较大或查询较慢，将转为后台执行，请稍后查看");
             }
         }
         return this.resultMap(true);

@@ -2,13 +2,11 @@ package com.spring.cloud.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.spring.cloud.entity.User;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -55,7 +53,7 @@ public class HttpClientUtil {
      * @param charset 编码格式
      * @return 页面内容
      */
-    public static String doGet(String url, List<BasicNameValuePair> params, String charset) {
+    public static String doGet(String url, List<BasicNameValuePair> params, String charset,String referUrl) {
         if (StringUtils.isEmpty(url)) {
             return null;
         }
@@ -72,6 +70,7 @@ public class HttpClientUtil {
                 }
             }
             HttpGet httpGet = new HttpGet(url);
+            addHeader(referUrl,httpGet);
             CloseableHttpResponse response = httpClient.execute(httpGet);
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != 200) {
@@ -105,7 +104,7 @@ public class HttpClientUtil {
             return null;
         }
         try {
-            List<NameValuePair> pairs = null;
+            List<NameValuePair> pairs = new ArrayList<>();
             if (params != null && !params.isEmpty()) {
                 pairs = new ArrayList<NameValuePair>();
                 for (BasicNameValuePair chb : params) {
@@ -122,12 +121,12 @@ public class HttpClientUtil {
             httpPost.addHeader("Connection", "keep-alive");
 //            httpPost.addHeader("Content-Length", "57");
             httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-            httpPost.addHeader("Host", "cy.dlysfw.com:8612");
-            httpPost.addHeader("Origin", "http://cy.dlysfw.com:8612");
+            httpPost.addHeader("Host", "182.150.21.216:8006");
+            httpPost.addHeader("Origin", "http://182.150.21.216:8006");
             if (!StringUtils.isEmpty(referUrl)) {
                 httpPost.addHeader("Referer", referUrl);
             }else {
-                httpPost.addHeader("Referer", "http://cy.dlysfw.com:8612/CYPublic/Weixin/Page/WeixinCredentialSearch.html?openid=olZW70oSIohPpdWUcCuBzeuvNfcc&timespan=30408&code=EE846445F264858B21E728A515537FDB");
+                httpPost.addHeader("Referer", "http://182.150.21.216:8006/CYPublic/Weixin/Page/WeixinCredentialSearch.html?openid=olZW70oSIohPpdWUcCuBzeuvNfcc&timespan=30408&code=EE846445F264858B21E728A515537FDB");
             }
             httpPost.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36");
             httpPost.addHeader("X-Requested-With", "XMLHttpRequest");
@@ -154,16 +153,34 @@ public class HttpClientUtil {
         return null;
     }
 
-    final static String queryDriverUrl = "http://cy.dlysfw.com:8612/CYPublic/SysHandler.ashx";
+    private static void addHeader(String referUrl, HttpRequest httpGet) {
+        httpGet.addHeader("Accept", "application/json, text/javascript, */*; q=0.01");
+        httpGet.addHeader("Accept-Encoding", "gzip, deflate");
+        httpGet.addHeader("Accept-Language", "zh-CN,zh;q=0.9");
+        httpGet.addHeader("Connection", "keep-alive");
+//            httpPost.addHeader("Content-Length", "57");
+//            httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        httpGet.addHeader("Host", "182.150.21.216:8006");
+        httpGet.addHeader("Origin", "http://182.150.21.216:8006");
+        if (!StringUtils.isEmpty(referUrl)) {
+            httpGet.addHeader("Referer", referUrl);
+        }else {
+            http://cyweixin.dlysfw.com:9081/?openid=olZW70oSIohPpdWUcCuBzeuvNfcc&timespan=17605&code=2E0D34437BE9D9118E8C9F703366CB2B
+            httpGet.addHeader("Referer", "http://182.150.21.216:8006/?openid=olZ3123EpdWUcCuBzeuvNfcc&timespan=17605&code=2E0D34437BE9D9118E8C9F703366CB2B");
+        }
+        httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36");
+    }
+
+    final static String queryDriverUrl = "http://182.150.21.216:8006//Yunzheng/api/YzData/MyCertCard";
 
     public static String queryDriver(String cardNumber,String referUrl) {
         List<BasicNameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("cmd", "CredentialQuery"));
-        params.add(new BasicNameValuePair("inparams[sfzh]", cardNumber));
-        return HttpClientUtil.doPost(queryDriverUrl, params, HttpClientUtil.CHARSET,referUrl);
+        params.add(new BasicNameValuePair("token", "WKCY200421"));
+        params.add(new BasicNameValuePair("idnumber", cardNumber));
+        return HttpClientUtil.doGet(queryDriverUrl, params, HttpClientUtil.CHARSET,referUrl);
     }
 
-    final static String queryDriverDetailsUrl = "http://cy.dlysfw.com:8612/CYPublic/SysHandler.ashx";
+    final static String queryDriverDetailsUrl = "http://182.150.21.216:8006/CYPublic/SysHandler.ashx";
 
     public static String queryDriverDetails(String cardNumber,String referUrl) {
         List<BasicNameValuePair> params = new ArrayList<>();
@@ -172,7 +189,7 @@ public class HttpClientUtil {
         return HttpClientUtil.doPost(queryDriverDetailsUrl, params, HttpClientUtil.CHARSET,referUrl);
     }
 
-    final static String queryCarUrl = "http://cy.dlysfw.com:8612/CYPublic/SysHandler.ashx";
+    final static String queryCarUrl = "http://182.150.21.216:8006/CYPublic/SysHandler.ashx";
 
     public static String queryCar(String cardNumber,String referUrl) {
         List<BasicNameValuePair> params = new ArrayList<>();
@@ -181,10 +198,10 @@ public class HttpClientUtil {
         return HttpClientUtil.doPost(queryCarUrl, params, HttpClientUtil.CHARSET,referUrl);
     }
 
-//    public static void main(String[] args) {
-//        String s = HttpClientUtil.queryCar("川AD29162");
-//        System.out.println(s);
-////        JSONObject jsonObject = JSONObject.parseObject("{\"returncode\":0,\"errmsg\":null,\"resultlist\":{\"result\":\"成功\",\"reccount\":1},\"datalist\":{\"TB0\":[{\"ssdq\":\"51010000\",\"fzjg\":\"成都市              \",\"xm\":\"陈帮元\",\"sfzh\":\"513901198512034517\",\"cyzgzh\":\"513901198512034517\",\"cylb\":\"网约车驾驶员\",\"cylbfullName\":\"网络预约出租汽车驾驶员\",\"clrq\":\"2018-12-10\",\"beginTime\":\"2018-12-10\",\"endTime\":\"2024-12-10\"}]}}");
-////        System.out.println(jsonObject);
-//    }
+    public static void main(String[] args) {
+        String s = HttpClientUtil.queryDriverDetails("5139011985120345171",null);
+        System.out.println(s);
+//        JSONObject jsonObject = JSONObject.parseObject("{\"returncode\":0,\"errmsg\":null,\"resultlist\":{\"result\":\"成功\",\"reccount\":1},\"datalist\":{\"TB0\":[{\"ssdq\":\"51010000\",\"fzjg\":\"成都市              \",\"xm\":\"陈帮元\",\"sfzh\":\"513901198512034517\",\"cyzgzh\":\"513901198512034517\",\"cylb\":\"网约车驾驶员\",\"cylbfullName\":\"网络预约出租汽车驾驶员\",\"clrq\":\"2018-12-10\",\"beginTime\":\"2018-12-10\",\"endTime\":\"2024-12-10\"}]}}");
+//        System.out.println(jsonObject);
+    }
 }

@@ -77,7 +77,7 @@ public class CarController extends ImportController {
                 throw (UnsupportedOperationException) o;
             }
         } catch (TimeoutException ex) {
-            throw new UnsupportedOperationException("数据量比较大，将转为后台执行，请稍后刷新");
+            throw new UnsupportedOperationException("数据量比较大或查询较慢，将转为后台执行，请稍后刷新");
         }
         return this.resultMap(true);
     }

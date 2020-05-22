@@ -121,7 +121,7 @@ public class DriverServiceImpl implements DriverService {
             try {
                 String resuslt = HttpClientUtil.queryDriver(item.getCardNumber(), user.getReferUrl());
                 JSONObject jsonObject = JSONObject.parseObject(resuslt);
-                JSONArray jsonArray = jsonObject.getJSONObject("datalist").getJSONArray("TB0");
+                JSONArray jsonArray = jsonObject.getJSONArray("data");
                 if (jsonArray.size() > 0) {
                     JSONObject data = jsonArray.getJSONObject(0);
                     item.syncData(data);

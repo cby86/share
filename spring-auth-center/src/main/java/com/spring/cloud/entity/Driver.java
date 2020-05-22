@@ -45,22 +45,26 @@ public class Driver extends IntIdBaseEntity {
     private ImportRecord importRecord;
 
     public void syncData(JSONObject data) {
-        String area_code = data.getString("ssdq");
-        String area = data.getString("fzjg");
-        String name = data.getString("cylb");
-        String driverName = data.getString("xm");
-        String fullName = data.getString("cylbfullName");
-        String firstDate = data.getString("clrq");
-        String beginTime = data.getString("beginTime");
-        String endTime = data.getString("endTime");
+        String area_code = data.getString("issueorganloccode");
+        String area = "成都市";
+        String name = data.getString("worktypename");
+        String driverName = data.getString("staffname");
+        String fullName = data.getString("worktypename");
+        String firstDate = data.getString("certificatefirstissuedate");
+        String beginTime = data.getString("certificateissuedate");
+        String endTime = data.getString("certificateexpiredate");
+        String driverCarType = data.getString("quasidrivetype");
+        String driverCardFirstDate = data.getString("earlydate");
+        this.driverCardFirstDate=JodaTimeUtils.convertToDateTime(driverCardFirstDate, "yyyyMMdd").toDate();
+        this.driverCarType = driverCarType;
         this.areaCode = area_code;
         this.area = area;
         this.name = name;
         this.driverName = driverName;
         this.fullName = fullName;
-        this.firstDate = JodaTimeUtils.convertToDateTime(firstDate, "yyyy-MM-dd").toDate();
-        this.beginDate = JodaTimeUtils.convertToDateTime(beginTime, "yyyy-MM-dd").toDate();
-        this.endDate = JodaTimeUtils.convertToDateTime(endTime, "yyyy-MM-dd").toDate();
+        this.firstDate = JodaTimeUtils.convertToDateTime(firstDate, "yyyyMMdd").toDate();
+        this.beginDate = JodaTimeUtils.convertToDateTime(beginTime, "yyyyMMdd").toDate();
+        this.endDate = JodaTimeUtils.convertToDateTime(endTime, "yyyyMMdd").toDate();
         this.status = Status.PROCCED;
     }
 
@@ -71,6 +75,8 @@ public class Driver extends IntIdBaseEntity {
         String driverCardFirstDate = data.getString("jsz_clrq");
         String driverCarType = data.getString("jsz_zjcx");
         String company = data.getString("jgmc");
+        String area = data.getString("dqmc");
+        this.area = area;
         this.mobile = mobile;
         this.currentStatus = currentStatus;
         this.nextStatus = nextStatus;
