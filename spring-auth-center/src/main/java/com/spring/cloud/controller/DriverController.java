@@ -73,7 +73,7 @@ public class DriverController extends ImportController {
             }
         });
         try {
-            Object o = submit.get(2, TimeUnit.SECONDS);
+            Object o = submit.get(10, TimeUnit.SECONDS);
             if (o instanceof UnsupportedOperationException) {
                 throw (UnsupportedOperationException) o;
             }
