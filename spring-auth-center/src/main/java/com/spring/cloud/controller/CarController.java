@@ -113,7 +113,7 @@ public class CarController extends ImportController {
                 }
             });
             try {
-                Object object = submit.get(2, TimeUnit.SECONDS);
+                Object object = submit.get(10, TimeUnit.SECONDS);
                 if (object instanceof UnsupportedOperationException) {
                     throw (UnsupportedOperationException) object;
                 }
