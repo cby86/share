@@ -7,7 +7,7 @@ const instance = axios.create({
   },
   // baseURL: 'http://47.106.152.238:81/api',
   baseURL: 'api',
-  timeout: 5000,
+  timeout: 15000,
   withCredentials: true
 })
 
