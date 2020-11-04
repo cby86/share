@@ -186,7 +186,7 @@
       removeTab(targetName, tab) {
         let tabs = this.tabs;
         let activeName = this.activeTab;
-        let cacheName;
+        let cacheName=null;
         tabs.forEach((tab, index) => {
           if (tab.name === targetName) {
             let nextTab = tabs[index + 1] || tabs[index - 1];
@@ -199,9 +199,13 @@
         this.activeTab = activeName;
         this.tabs = tabs.filter(tab => tab.name !== targetName);
         if (cacheName) {
-          for (let name in cacheName) {
-            this.cacheTag = this.cacheTag.filter(index => index !== name)
-          }
+          cacheName.forEach(
+            item=>{
+              this.cacheTag = this.cacheTag.filter(index =>{
+                return index !== item;
+              })
+            }
+          )
         }
         if (this.tabs.length == 0) {
           this.activeTab = "1"

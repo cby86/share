@@ -1,5 +1,6 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
-  BASE_API: '"http://127.0.0.1:8000"'
+  BASE_API: '"http://47.106.152.238:81/api"',
+  SYSTEM_NAME: '"网约车司机查询系统"'
 }

@@ -3,10 +3,10 @@
     <el-header class="header-nav">
       <el-row>
         <el-col :span="6" class='logo-container'>
-          <div class="collapse-btn">
+          <div class="collapse-btn" v-on:click="headerClick">
             <i class="el-icon-menu icon-btn"></i>
           </div>
-          <span class="title">网约车司机车辆查询系统</span>
+          <span class="title">{{title}}</span>
         </el-col>
         <el-col :span="6" class="user">
           <span class="el-icon-user"></span>
@@ -19,9 +19,9 @@
 								<i class="el-icon-caret-bottom el-icon-right"></i>
 							</span>
 							<el-dropdown-menu slot="dropdown">
-								<el-dropdown-item command='info'>个人信息</el-dropdown-item>
-								<el-dropdown-item command='changePassword'>修改密码</el-dropdown-item>
-								<el-dropdown-item command='logout'>退出</el-dropdown-item>
+								<el-dropdown-item command='info'><v-icon name="icon-businesscard_fill" ></v-icon>个人信息</el-dropdown-item>
+								<el-dropdown-item command='changePassword'><v-icon name="icon-setup" ></v-icon>修改密码</el-dropdown-item>
+								<el-dropdown-item command='logout'><v-icon name="icon-tuichu1" ></v-icon>退出</el-dropdown-item>
 							</el-dropdown-menu>
 						</el-dropdown>
 					</span>
@@ -53,6 +53,7 @@
     name: 'Header',
     data() {
       return {
+        title: process.env.SYSTEM_NAME,
         dialogVisible: false,
         form:{
           newPassword:null
@@ -74,6 +75,9 @@
       this.bus.$on('refreshUser', this.refreshUser);
     },
     methods: {
+      headerClick() {
+        this.bus.$emit("headerClick");
+      },
       refreshUser() {
         this.$request.post({
           url: '/userInfo',
@@ -125,7 +129,6 @@
         //清除vuex
         this.$store.dispatch('deleteUser')
         //路由跳转
-        this.$router.push('/login')
         this.$request.post({
           url: '/logout',
           success: result => {
@@ -145,11 +148,11 @@
     }
   }
 </script>
-<style>
+<style scoped>
   .header-nav {
     width: 100%;
     height: 60px;
-    background: #303133;
+    background: #343268;
     color: #fff;
     border-bottom: 1px solid #1f2d3d;
     overflow: hidden;
@@ -219,7 +222,7 @@
   }
 
   .avatarname {
-    color: #409eff;
+    color: #ffffff;
     font-weight: bolder;
   }
 
