@@ -166,7 +166,7 @@ public class HttpClientUtil {
             httpGet.addHeader("Referer", referUrl);
         }else {
             http://cyweixin.dlysfw.com:9081/?openid=olZW70oSIohPpdWUcCuBzeuvNfcc&timespan=17605&code=2E0D34437BE9D9118E8C9F703366CB2B
-            httpGet.addHeader("Referer", "http://182.150.21.216:8006/?openid=olZ3123EpdWUcCuBzeuvNfcc&timespan=17605&code=2E0D34437BE9D9118E8C9F703366CB2B");
+            httpGet.addHeader("Referer", "http://182.150.21.216:8006/?openid=olZ3123Epffdfsdfsdfcfdsfsc&timespan=17605&code=2E0D34437BE9D9118E8C9F703366CB2B");
         }
         httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36");
     }

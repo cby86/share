@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by chenbangyuan on 2017/5/25.
+ * Created by an on 2017/5/25.
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
