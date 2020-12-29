@@ -4,6 +4,6 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BASE_API: '"tools"',
+  BASE_API: '"api"',
   SYSTEM_NAME: '"网约车司机查询系统"'
 })
