@@ -66,7 +66,7 @@
       </el-col>
     </el-row>
     <page-nation :totalCount="totalCount" :pageCount="pageCount" v-on:pageChange="loadImport"></page-nation>
-    <upload-file :centerDialogVisible="uploadDialog" :url="'/api/'+this.type+'/import'" @close="closeFile"></upload-file>
+    <upload-file :centerDialogVisible="uploadDialog" :url="this.url+'/'+this.type+'/import'" @close="closeFile"></upload-file>
   </div>
 </template>
 
@@ -82,6 +82,7 @@
     },
     data() {
       return {
+        url: process.env.BASE_API,
         uploadDialog: false,
         queryForm: {
           queryStatus: "all",
